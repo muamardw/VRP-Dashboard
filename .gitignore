@@ -137,6 +137,7 @@ temp/
 *.txt
 !requirements.txt
 !env_example.txt
+!runtime.txt
 
 # Image files
 *.png
@@ -157,6 +158,7 @@ temp/
 !package-lock.json
 !vercel.json
 !railway.json
+!nixpacks.toml
 
 # Cache and data directories
 cache/

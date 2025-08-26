@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Route Information Dashboard - DQN VRP</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            padding: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+
+        .card h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .vehicle-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .info-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .info-item h3 {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .info-item .value {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .route-segments {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .segment {
+            background: #f8f9fa;
+            margin-bottom: 20px;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+        }
+
+        .segment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .segment-title {
+            font-weight: bold;
+            color: #333;
+            font-size: 1.1em;
+        }
+
+        .segment-status {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .status-lancar { background: #d4edda; color: #155724; }
+        .status-padat { background: #fff3cd; color: #856404; }
+        .status-macet { background: #f8d7da; color: #721c24; }
+        .status-cuaca { background: #cce5ff; color: #004085; }
+
+        .segment-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .detail-label {
+            color: #666;
+        }
+
+        .detail-value {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .road-details {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .road-details h4 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .road-item {
+            background: #f8f9fa;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border-left: 3px solid #667eea;
+        }
+
+        .road-name {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .road-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 8px;
+            font-size: 0.85em;
+        }
+
+        .road-info-item {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .road-info-label {
+            color: #666;
+        }
+
+        .road-info-value {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .weather-traffic {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .weather-card, .traffic-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .weather-card h3, .traffic-card h3 {
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .weather-icon, .traffic-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .weather-desc, .traffic-desc {
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+
+        .weather-speed, .traffic-speed {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .control-group label {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .control-group select, .control-group input {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .area-badge {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .debug-info {
+            background: #fff3cd;
+            color: #856404;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+
+        .company-info {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .company-info h3 {
+            margin-bottom: 10px;
+            font-size: 1.5em;
+        }
+
+        .company-info p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .weather-traffic {
+                grid-template-columns: 1fr;
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚗 Route Information Dashboard</h1>
+            <p>DQN VRP dengan Informasi Rute Dinamis</p>
+        </div>
+
+        <div class="dashboard">
+            <!-- Vehicle Route Information -->
+            <div class="card">
+                <h2>📊 Informasi Rute Kendaraan</h2>
+                
+                <!-- Company Info -->
+                <div class="company-info">
+                    <h3>🏢 PT. Sanghiang Perkasa</h3>
+                    <p>Sistem Informasi Rute Kendaraan Logistik</p>
+                </div>
+                
+                <div class="controls">
+                    <div class="control-group">
+                        <label for="vehicleId">ID Kendaraan:</label>
+                        <select id="vehicleId">
+                            <option value="1">Kendaraan 1</option>
+                            <option value="2">Kendaraan 2</option>
+                            <option value="3">Kendaraan 3</option>
+                            <option value="4">Kendaraan 4</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="weather">Kondisi Cuaca:</label>
+                        <select id="weather">
+                            <option value="sunny">Cerah</option>
+                            <option value="cloudy">Berawan</option>
+                            <option value="rainy">Hujan</option>
+                            <option value="stormy">Badai</option>
+                        </select>
+                    </div>
+                    
+                    <button class="btn" onclick="loadRouteInfo()">🔄 Update Informasi</button>
+                </div>
+
+                <div id="vehicleInfo" class="vehicle-info">
+                    <div class="info-item">
+                        <h3>Total Jarak</h3>
+                        <div class="value" id="totalDistance">-</div>
+                    </div>
+                    <div class="info-item">
+                        <h3>Total Waktu</h3>
+                        <div class="value" id="totalTime">-</div>
+                    </div>
+                    <div class="info-item">
+                        <h3>Waktu Mulai</h3>
+                        <div class="value" id="startTime">-</div>
+                    </div>
+                    <div class="info-item">
+                        <h3>Estimasi Selesai</h3>
+                        <div class="value" id="estimatedCompletion">-</div>
+                    </div>
+                </div>
+
+                <div id="routeSegments" class="route-segments">
+                    <div class="loading">Loading route segments...</div>
+                </div>
+            </div>
+
+            <!-- Weather and Traffic Information -->
+            <div class="card">
+                <h2>🌤️ Kondisi Cuaca & Lalu Lintas</h2>
+                
+                <div class="weather-traffic">
+                    <div class="weather-card">
+                        <div class="weather-icon" id="weatherIcon">☀️</div>
+                        <h3>Kondisi Cuaca</h3>
+                        <div class="weather-desc" id="weatherDesc">Cerah</div>
+                        <div class="weather-speed" id="weatherSpeed">Normal</div>
+                    </div>
+                    
+                    <div class="traffic-card">
+                        <div class="traffic-icon" id="trafficIcon">🚗</div>
+                        <h3>Kondisi Lalu Lintas</h3>
+                        <div class="traffic-desc" id="trafficDesc">Lancar</div>
+                        <div class="traffic-speed" id="trafficSpeed">40 km/h</div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <button class="btn" onclick="loadTrafficUpdate()">🔄 Update Traffic</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8001/api';
+        const DEBUG_MODE = true;
+        
+        // Weather icons mapping
+        const weatherIcons = {
+            'sunny': '☀️',
+            'cloudy': '☁️',
+            'rainy': '🌧️',
+            'stormy': '⛈️'
+        };
+        
+        // Traffic icons mapping
+        const trafficIcons = {
+            'low': '🚗',
+            'medium': '🚙',
+            'high': '🚐',
+            'very_high': '🚚'
+        };
+
+        // Fallback data untuk PT. Sanghiang Perkasa
+        const fallbackData = {
+            vehicle_id: 1,
+            total_distance: 22.63,
+            total_time: 0.85,
+            weather_condition: "sunny",
+            start_time: "08:00",
+            estimated_completion: "08:51",
+            route_segments: [
+                {
+                    from: "Customer 0",
+                    to: "Customer 2",
+                    distance: 0.65,
+                    travel_time: 0.15,
+                    traffic_condition: "high",
+                    weather_condition: "sunny",
+                    adjusted_speed: 9.0,
+                    estimated_arrival: "08:09",
+                    road_segments: [
+                        {
+                            road_name: "Jalan Sudirman",
+                            length: 1.2,
+                            traffic_level: "medium",
+                            weather_impact: "low",
+                            area: "Jakarta Pusat"
+                        },
+                        {
+                            road_name: "Jalan Gatot Subroto",
+                            length: 2.1,
+                            traffic_level: "medium",
+                            weather_impact: "low",
+                            area: "Jakarta Selatan"
+                        }
+                    ]
+                }
+            ]
+        };
+
+        async function loadRouteInfo() {
+            const vehicleId = document.getElementById('vehicleId').value;
+            const weather = document.getElementById('weather').value;
+            
+            try {
+                if (DEBUG_MODE) {
+                    console.log('Loading route info...');
+                }
+                
+                const response = await fetch(`${API_BASE}/route-info/${vehicleId}?weather=${weather}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (DEBUG_MODE) {
+                    console.log('Route data received:', data);
+                }
+                
+                updateVehicleInfo(data);
+                updateRouteSegments(data.route_segments);
+                
+                // Show success message
+                showMessage('✅ Data PT. Sanghiang Perkasa berhasil dimuat', 'success');
+                
+            } catch (error) {
+                console.error('Error loading route info:', error);
+                
+                // Show error message
+                showMessage('❌ Gagal memuat data PT. Sanghiang Perkasa. Menggunakan data fallback.', 'error');
+                
+                // Use fallback data
+                updateVehicleInfo(fallbackData);
+                updateRouteSegments(fallbackData.route_segments);
+            }
+        }
+
+        function showMessage(message, type) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = type;
+            messageDiv.textContent = message;
+            
+            const container = document.querySelector('.card');
+            container.insertBefore(messageDiv, container.firstChild);
+            
+            // Remove message after 5 seconds
+            setTimeout(() => {
+                if (messageDiv.parentNode) {
+                    messageDiv.parentNode.removeChild(messageDiv);
+                }
+            }, 5000);
+        }
+
+        function updateVehicleInfo(data) {
+            document.getElementById('totalDistance').textContent = `${data.total_distance} km`;
+            document.getElementById('totalTime').textContent = `${data.total_time} jam`;
+            document.getElementById('startTime').textContent = data.start_time;
+            document.getElementById('estimatedCompletion').textContent = data.estimated_completion;
+        }
+
+        function updateRouteSegments(segments) {
+            const container = document.getElementById('routeSegments');
+            
+            if (segments.length === 0) {
+                container.innerHTML = '<div class="loading">No route segments available</div>';
+                return;
+            }
+            
+            let html = '';
+            segments.forEach((segment, index) => {
+                if (DEBUG_MODE) {
+                    console.log('Processing segment:', segment);
+                }
+                
+                const statusClass = getStatusClass(segment.traffic_condition, segment.weather_condition);
+                const statusText = getStatusText(segment.traffic_condition, segment.weather_condition);
+                
+                html += `
+                    <div class="segment">
+                        <div class="segment-header">
+                            <div class="segment-title">Segment ${index + 1}: ${segment.from} → ${segment.to}</div>
+                            <div class="segment-status ${statusClass}">${statusText}</div>
+                        </div>
+                        <div class="segment-details">
+                            <div class="detail-item">
+                                <span class="detail-label">Jarak:</span>
+                                <span class="detail-value">${segment.distance.toFixed(2)} km</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Waktu:</span>
+                                <span class="detail-value">${segment.travel_time.toFixed(2)} jam</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Kecepatan:</span>
+                                <span class="detail-value">${segment.adjusted_speed.toFixed(1)} km/h</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">ETA:</span>
+                                <span class="detail-value">${segment.estimated_arrival}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="road-details">
+                            <h4>🛣️ Jalan yang akan dilewati:</h4>
+                            ${generateRoadDetails(segment.road_segments, segment.weather_condition)}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        function generateRoadDetails(roads, weather) {
+            if (DEBUG_MODE) {
+                console.log('Generating road details for:', roads);
+            }
+            
+            if (!roads || roads.length === 0) {
+                return '<div class="debug-info">⚠️ Tidak ada informasi jalan yang tersedia</div>';
+            }
+            
+            let html = '';
+            roads.forEach((road, index) => {
+                if (DEBUG_MODE) {
+                    console.log('Processing road:', road);
+                }
+                
+                const statusClass = getStatusClass(road.traffic_level, weather);
+                const statusText = getStatusText(road.traffic_level, weather);
+                
+                html += `
+                    <div class="road-item">
+                        <div class="road-name">
+                            ${index + 1}. ${road.road_name} 
+                            <span class="area-badge">${road.area || 'Unknown'}</span>
+                        </div>
+                        <div class="road-info">
+                            <div class="road-info-item">
+                                <span class="road-info-label">Panjang:</span>
+                                <span class="road-info-value">${road.length.toFixed(1)} km</span>
+                            </div>
+                            <div class="road-info-item">
+                                <span class="road-info-label">Traffic Level:</span>
+                                <span class="road-info-value">${road.traffic_level}</span>
+                            </div>
+                            <div class="road-info-item">
+                                <span class="road-info-label">Weather Impact:</span>
+                                <span class="road-info-value">${road.weather_impact}</span>
+                            </div>
+                            <div class="road-info-item">
+                                <span class="road-info-label">Status:</span>
+                                <span class="road-info-value">${statusText}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            return html;
+        }
+
+        function getStatusClass(traffic, weather) {
+            if (traffic === 'very_high' && (weather === 'rainy' || weather === 'stormy')) {
+                return 'status-cuaca';
+            } else if (traffic === 'very_high') {
+                return 'status-macet';
+            } else if (weather === 'rainy' || weather === 'stormy') {
+                return 'status-cuaca';
+            } else if (traffic === 'high') {
+                return 'status-padat';
+            } else {
+                return 'status-lancar';
+            }
+        }
+
+        function getStatusText(traffic, weather) {
+            if (traffic === 'very_high' && (weather === 'rainy' || weather === 'stormy')) {
+                return '⚠️ Macet & Cuaca Buruk';
+            } else if (traffic === 'very_high') {
+                return '🚗 Macet';
+            } else if (weather === 'rainy' || weather === 'stormy') {
+                return '🌧️ Cuaca Buruk';
+            } else if (traffic === 'high') {
+                return '🚙 Padat';
+            } else {
+                return '✅ Lancar';
+            }
+        }
+
+        async function loadTrafficUpdate() {
+            try {
+                const response = await fetch(`${API_BASE}/traffic-update`);
+                const data = await response.json();
+                
+                document.getElementById('trafficDesc').textContent = data.description;
+                document.getElementById('trafficSpeed').textContent = `${data.speed} km/h`;
+                document.getElementById('trafficIcon').textContent = trafficIcons[data.traffic_level] || '🚗';
+                
+            } catch (error) {
+                console.error('Error loading traffic update:', error);
+                showMessage('⚠️ Gagal memuat update traffic', 'warning');
+            }
+        }
+
+        function updateWeatherDisplay() {
+            const weather = document.getElementById('weather').value;
+            document.getElementById('weatherIcon').textContent = weatherIcons[weather] || '☀️';
+            
+            const weatherDesc = {
+                'sunny': 'Cerah',
+                'cloudy': 'Berawan',
+                'rainy': 'Hujan',
+                'stormy': 'Badai'
+            };
+            
+            document.getElementById('weatherDesc').textContent = weatherDesc[weather] || 'Cerah';
+            
+            const weatherSpeed = {
+                'sunny': 'Normal',
+                'cloudy': 'Sedikit Lambat',
+                'rainy': 'Lambat',
+                'stormy': 'Sangat Lambat'
+            };
+            
+            document.getElementById('weatherSpeed').textContent = weatherSpeed[weather] || 'Normal';
+        }
+
+        // Event listeners
+        document.getElementById('weather').addEventListener('change', updateWeatherDisplay);
+        
+        // Load initial data
+        window.addEventListener('load', () => {
+            loadRouteInfo();
+            loadTrafficUpdate();
+            updateWeatherDisplay();
+        });
+    </script>
+</body>
+</html> 

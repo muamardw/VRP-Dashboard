@@ -1,0 +1,69 @@
+# API Configuration
+api:
+  google_maps:
+    base_url: "https://maps.googleapis.com/maps/api"
+    traffic_endpoint: "/traffic/v1"
+  openweather:
+    base_url: "https://api.openweathermap.org/data/2.5"
+    weather_endpoint: "/weather"
+
+# Environment Configuration
+environment:
+  max_capacity: 6000  # Sesuai dengan data PT. Sanghiang
+  time_window: 24
+  depot_location: [-6.2088, 106.8456]  # Jakarta Timur
+
+# RL Model Configuration (ADVANCED OPTIMIZED)
+model:
+  learning_rate: 0.0003  # Lebih stabil untuk convergence
+  gamma: 0.99
+  epsilon_start: 1.0
+  epsilon_end: 0.005  # Lebih rendah untuk exploitation
+  epsilon_decay: 0.999  # Lebih gradual
+  memory_size: 100000  # Lebih banyak experience
+  batch_size: 64  # Optimal untuk learning
+  target_update: 5  # Update lebih sering
+  hidden_layers: [512, 256, 256, 128]  # Arsitektur lebih dalam
+  dropout_rate: 0.2  # Regularization
+  activation: 'relu'
+  optimizer: 'adam'
+  loss_function: 'mse'
+
+# Training Configuration (ADVANCED)
+training:
+  episodes: 3000  # Lebih banyak episode
+  max_steps: 150  # Lebih banyak steps per episode
+  save_interval: 50  # Save lebih sering
+  evaluation_interval: 25  # Evaluate lebih sering
+  early_stopping_patience: 100  # Early stopping
+  min_epsilon: 0.005  # Minimum exploration
+
+# Advanced DQN Features
+advanced_dqn:
+  double_dqn: true  # Double DQN
+  dueling_dqn: true  # Dueling DQN
+  prioritized_replay: true  # Prioritized Experience Replay
+  noisy_networks: false  # Noisy Networks (optional)
+  n_step_learning: 3  # N-step learning
+
+# Reward Function (ENHANCED)
+reward_function:
+  distance_penalty_weight: 0.3  # Weight untuk distance penalty
+  time_efficiency_weight: 0.2  # Weight untuk time efficiency
+  utilization_bonus_weight: 0.2  # Weight untuk utilization
+  completion_bonus_weight: 0.3  # Weight untuk completion
+  efficiency_threshold: 200  # Threshold untuk efficiency bonus
+  time_window_bonus: 20  # Bonus untuk time window compliance
+
+# Weather Impact Factors
+weather_impact:
+  rain: 1.2  # 20% slower
+  snow: 1.5  # 50% slower
+  fog: 1.3   # 30% slower
+  clear: 1.0 # normal speed
+
+# Traffic Impact Factors
+traffic_impact:
+  low: 1.0    # normal speed
+  medium: 1.3 # 30% slower
+  high: 1.6   # 60% slower 

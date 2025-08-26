@@ -1,0 +1,46 @@
+# API Configuration
+api:
+  google_maps:
+    base_url: "https://maps.googleapis.com/maps/api"
+    traffic_endpoint: "/traffic/v1"
+  openweather:
+    base_url: "https://api.openweathermap.org/data/2.5"
+    weather_endpoint: "/weather"
+
+# Environment Configuration
+environment:
+  max_capacity: 6000
+  time_window: 24
+  depot_location: [-6.2088, 106.8456]
+
+# RL Model Configuration (SIMPLE & STABLE)
+model:
+  learning_rate: 0.001  # Back to original
+  gamma: 0.99
+  epsilon_start: 1.0
+  epsilon_end: 0.01  # Back to original
+  epsilon_decay: 0.995  # Back to original
+  memory_size: 10000  # Back to original
+  batch_size: 32  # Smaller for stability
+  target_update: 10  # Back to original
+  hidden_layers: [128, 64]  # Simpler architecture
+
+# Training Configuration (SIMPLE)
+training:
+  episodes: 1000  # Back to original
+  max_steps: 100  # Back to original
+  save_interval: 100
+  evaluation_interval: 50
+
+# Weather Impact Factors
+weather_impact:
+  rain: 1.2
+  snow: 1.5
+  fog: 1.3
+  clear: 1.0
+
+# Traffic Impact Factors
+traffic_impact:
+  low: 1.0
+  medium: 1.3
+  high: 1.6 
