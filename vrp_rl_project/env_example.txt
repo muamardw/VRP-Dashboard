@@ -1,0 +1,18 @@
+# API Keys
+ORS_API_KEY=your_openrouteservice_api_key_here
+OPENWEATHER_API_KEY=your_openweather_api_key_here
+
+# Database
+DATABASE_URL=sqlite:///./vrp_database.db
+
+# CORS Settings
+CORS_ORIGINS=http://localhost:3000,https://your-frontend-domain.vercel.app
+
+# Security
+SECRET_KEY=your-secret-key-here
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+
+# Server Settings
+HOST=0.0.0.0
+PORT=8000 

@@ -1,0 +1,576 @@
+/* Map Legend */
+.map-legend {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  min-width: 200px;
+  backdrop-filter: blur(10px);
+}
+
+.legend-title {
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #333;
+  font-size: 14px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 5px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 12px;
+  color: #555;
+}
+
+.legend-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.depot-icon {
+  background: #007bff;
+  color: white;
+}
+
+.route-icon {
+  background: #28a745;
+  color: white;
+}
+
+.vehicle-icon {
+  background: #ffc107;
+  color: #333;
+}
+
+.traffic-icon {
+  background: #dc3545;
+  color: white;
+}
+
+.weather-icon {
+  background: #17a2b8;
+  color: white;
+}
+
+/* Reset dan cleanup */
+.map-container {
+  position: relative;
+  height: 70vh;
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Hide unnecessary markers */
+.leaflet-marker-icon:not(.route-marker):not(.vehicle-marker):not(.traffic-icon):not(.weather-icon) {
+  display: none !important;
+}
+
+/* Route Markers */
+.route-marker {
+  background: none !important;
+  border: none !important;
+}
+
+.marker-content {
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  font-weight: bold;
+  min-width: 60px;
+}
+
+.marker-number {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.marker-destination {
+  font-size: 10px;
+  margin-top: 2px;
+  opacity: 0.9;
+}
+
+/* Vehicle Markers */
+.vehicle-marker {
+  background: none !important;
+  border: none !important;
+}
+
+.vehicle-icon {
+  background: linear-gradient(135deg, #28a745, #1e7e34);
+  color: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  border: 2px solid white;
+}
+
+.vehicle-number {
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.vehicle-type {
+  font-size: 8px;
+  margin-top: 2px;
+}
+
+/* Traffic Icons */
+.traffic-icon {
+  background: none !important;
+  border: none !important;
+  font-size: 16px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.traffic-heavy {
+  color: #dc3545;
+}
+
+.traffic-moderate {
+  color: #ffc107;
+}
+
+.traffic-light {
+  color: #28a745;
+}
+
+/* Weather Icons */
+.weather-icon {
+  background: none !important;
+  border: none !important;
+  font-size: 16px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.weather-sunny {
+  color: #ffc107;
+}
+
+.weather-cloudy {
+  color: #6c757d;
+}
+
+.weather-rain {
+  color: #007bff;
+}
+
+/* Popups */
+.route-popup, .vehicle-popup, .traffic-popup, .weather-popup, .polyline-popup {
+  max-width: 300px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.route-popup h4, .vehicle-popup h5, .traffic-popup h5, .weather-popup h5, .polyline-popup h5 {
+  color: #007bff;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+.route-popup p, .vehicle-popup p, .traffic-popup p, .weather-popup p, .polyline-popup p {
+  margin: 4px 0;
+  font-size: 12px;
+}
+
+.road-segments {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #eee;
+}
+
+.road-segments h5 {
+  color: #28a745;
+  font-size: 12px;
+  margin-bottom: 4px;
+}
+
+.road-segment {
+  background: #f8f9fa;
+  padding: 4px 8px;
+  margin: 2px 0;
+  border-radius: 4px;
+  font-size: 11px;
+}
+
+/* Legend */
+.legend {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  font-size: 12px;
+  max-width: 200px;
+}
+
+.legend h4 {
+  margin: 0 0 10px 0;
+  color: #333;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.legend-section {
+  margin-bottom: 10px;
+}
+
+.legend-section h5 {
+  margin: 0 0 5px 0;
+  color: #666;
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  margin: 3px 0;
+  font-size: 10px;
+}
+
+.legend-icon {
+  margin-right: 8px;
+  font-size: 14px;
+}
+
+/* Dashboard Layout */
+.dashboard-container {
+  padding: 20px;
+  background: #f8f9fa;
+  min-height: 100vh;
+}
+
+.dashboard-header {
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: white;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.dashboard-subtitle {
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.stat-card {
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 24px;
+  font-weight: bold;
+  color: #007bff;
+  margin-bottom: 5px;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Detail Panel */
+.detail-panel {
+  position: fixed;
+  top: 0;
+  right: -400px;
+  width: 400px;
+  height: 100vh;
+  background: white;
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
+  transition: right 0.3s ease;
+  z-index: 1000;
+  overflow-y: auto;
+}
+
+.detail-panel.open {
+  right: 0;
+}
+
+.panel-header {
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: white;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.panel-title {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 5px;
+}
+
+.panel-content {
+  padding: 20px;
+}
+
+.route-detail {
+  margin-bottom: 20px;
+  padding: 15px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+}
+
+.route-detail h3 {
+  color: #007bff;
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.detail-label {
+  font-weight: bold;
+  color: #666;
+  font-size: 12px;
+}
+
+.detail-value {
+  color: #333;
+  font-size: 12px;
+}
+
+/* Error and Loading States */
+.error-message {
+  background: #f8d7da;
+  color: #721c24;
+  padding: 15px;
+  border-radius: 8px;
+  margin: 20px 0;
+  text-align: center;
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  font-size: 18px;
+  color: #007bff;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .dashboard-container {
+    padding: 10px;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  
+  .detail-panel {
+    width: 100%;
+    right: -100%;
+  }
+  
+  .legend {
+    bottom: 10px;
+    right: 10px;
+    max-width: 150px;
+  }
+} 
+
+/* Hub Circle */
+.hub-circle {
+  background: none !important;
+  border: none !important;
+  pointer-events: none;
+}
+
+.hub-circle-bg {
+  width: 200px;
+  height: 200px;
+  border: 3px dashed rgba(220, 53, 69, 0.3);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(220, 53, 69, 0.1) 0%, transparent 70%);
+  animation: hubRotate 10s linear infinite;
+}
+
+@keyframes hubRotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Depot Marker */
+.depot-marker {
+  background: none !important;
+  border: none !important;
+}
+
+.depot-icon {
+  background: linear-gradient(135deg, #dc3545, #c82333);
+  color: white;
+  padding: 15px 20px;
+  border-radius: 30px;
+  box-shadow: 0 8px 20px rgba(220, 53, 69, 0.5);
+  text-align: center;
+  font-weight: bold;
+  min-width: 120px;
+  border: 4px solid white;
+  animation: depotPulse 2s infinite;
+  position: relative;
+  z-index: 1000;
+}
+
+@keyframes depotPulse {
+  0% {
+    box-shadow: 0 8px 20px rgba(220, 53, 69, 0.5);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 12px 25px rgba(220, 53, 69, 0.7);
+    transform: scale(1.08);
+  }
+  100% {
+    box-shadow: 0 8px 20px rgba(220, 53, 69, 0.5);
+    transform: scale(1);
+  }
+}
+
+.depot-label {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.depot-name {
+  font-size: 14px;
+  margin: 4px 0;
+  opacity: 0.9;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.depot-connections {
+  font-size: 11px;
+  margin-top: 6px;
+  opacity: 0.8;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+.depot-hub-indicator {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #ffc107;
+  color: #333;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+  border: 2px solid white;
+  animation: hubGlow 1.5s infinite;
+}
+
+@keyframes hubGlow {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(255, 193, 7, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 15px rgba(255, 193, 7, 0.8);
+  }
+}
+
+.depot-popup h4 {
+  color: #dc3545;
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.depot-popup p {
+  margin: 5px 0;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.depot-popup ul {
+  margin: 5px 0;
+  padding-left: 20px;
+}
+
+.depot-popup li {
+  margin: 3px 0;
+  font-size: 11px;
+  color: #666;
+} 
