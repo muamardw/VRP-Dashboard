@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: vrp-dashboard-backend
+    env: python
+    plan: free
+    buildCommand: cd vrp_rl_project && pip install -r requirements.txt
+    startCommand: cd vrp_rl_project && uvicorn backend_api:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.0
+      - key: ORS_API_KEY
+        sync: false
+      - key: OPENWEATHER_API_KEY
+        sync: false
+      - key: CORS_ORIGINS
+        value: "*" 
