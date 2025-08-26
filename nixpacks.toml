@@ -1,0 +1,11 @@
+[phases.setup]
+nixPkgs = ["python39", "python39Packages.pip"]
+
+[phases.install]
+cmds = ["cd vrp_rl_project && pip install -r requirements.txt"]
+
+[phases.build]
+cmds = ["echo 'Build completed'"]
+
+[start]
+cmd = "cd vrp_rl_project && uvicorn backend_api:app --host 0.0.0.0 --port $PORT" 

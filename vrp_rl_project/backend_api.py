@@ -9,7 +9,7 @@ import config
 from pt_sanghiang_data import PTSanghiangDataProcessor
 from realistic_route_system import RealisticRouteSystem
 
-app = FastAPI()
+app = FastAPI(title="VRP Dashboard API", version="1.0.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -18,6 +18,15 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.get("/health")
+async def health_check():
+    return {
+        "status": "healthy",
+        "timestamp": datetime.now().isoformat(),
+        "version": "1.0.0",
+        "service": "VRP Dashboard API"
+    }
 
 ORS_API_KEY = config.ORS_API_KEY
 OPENWEATHER_API_KEY = config.OPENWEATHER_API_KEY
